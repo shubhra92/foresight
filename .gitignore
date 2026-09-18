@@ -1,0 +1,28 @@
+# Python virtual environment
+.venv/
+
+# Processed data (large files)
+data/processed/
+data/raw/*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Model artefacts
+*.joblib
+*.pkl
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / env files
+.env
+*.env

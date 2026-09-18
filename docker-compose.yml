@@ -1,0 +1,79 @@
+# Named volumes are primed from the image (data/, models/, reports/) on first
+# boot, then persist across refreshes and restarts.
+volumes:
+  foresight_data:
+  foresight_models:
+  foresight_reports:
+
+services:
+  api:
+    build: .
+    image: foresight:latest
+    command: ["./run.sh", "api"]
+    restart: unless-stopped
+    environment:
+      FORESIGHT_DATA_DIR: /app/data/processed
+      FORESIGHT_AUTH_TOKEN: ${FORESIGHT_AUTH_TOKEN:-}
+      FORESIGHT_CORS_ORIGINS: ${FORESIGHT_CORS_ORIGINS:-http://localhost:8501,http://127.0.0.1:8501}
+      FORESIGHT_STOCKOUT_THRESHOLD_WEEKS: ${FORESIGHT_STOCKOUT_THRESHOLD_WEEKS:-2.0}
+      FORESIGHT_OVERSTOCK_THRESHOLD_WEEKS: ${FORESIGHT_OVERSTOCK_THRESHOLD_WEEKS:-8.0}
+      FORESIGHT_RISK_HIGH_THRESHOLD: ${FORESIGHT_RISK_HIGH_THRESHOLD:-0.5}
+      REBUILD: ${REBUILD:-0}
+    ports:
+      - "${FORESIGHT_PORT_API:-8000}:8000"
+    volumes:
+      - foresight_data:/app/data
+      - foresight_models:/app/models
+      - foresight_reports:/app/reports
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health', timeout=5).status==200 else 1)"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  dashboard:
+    image: foresight:latest
+    command: ["./run.sh", "dashboard"]
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      FORESIGHT_DATA_DIR: /app/data/processed
+      FORESIGHT_API_URL: http://api:8000
+      FORESIGHT_AUTH_TOKEN: ${FORESIGHT_AUTH_TOKEN:-}
+    ports:
+      - "${FORESIGHT_PORT_DASH:-8501}:8501"
+    volumes:
+      - foresight_data:/app/data
+      - foresight_models:/app/models
+      - foresight_reports:/app/reports
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8501/_stcore/health', timeout=5).status==200 else 1)"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # One-shot weekly job: recompute forecast accuracy + refresh forecast if stale.
+  # Runs via host cron (see cron.example) or `docker compose run --rm refresh`.
+  refresh:
+    image: foresight:latest
+    profiles: ["refresh"]
+    command: ["./run.sh", "refresh"]
+    environment:
+      FORESIGHT_DATA_DIR: /app/data/processed
+      REBUILD: ${REBUILD:-0}
+    volumes:
+      - foresight_data:/app/data
+      - foresight_models:/app/models
+      - foresight_reports:/app/reports

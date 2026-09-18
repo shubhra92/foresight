@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+venv
+**/__pycache__
+*.pyc
+*.pyo
+*.log
+.env
+.env.*
+!.env.example
+notebooks
+*.ipynb
+.DS_Store

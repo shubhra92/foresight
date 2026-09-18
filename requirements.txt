@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Project FORESIGHT — dependencies
+# Python 3.13+  |  Install: pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Core data stack
+pandas==2.2.3
+numpy==2.2.6
+
+# Machine learning & forecasting
+scikit-learn==1.6.1
+lightgbm==4.6.0
+statsmodels==0.14.4
+
+# Visualisation
+matplotlib==3.10.3
+plotly==6.1.2
+
+# Dashboard
+streamlit==1.45.1
+
+# API service
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+pydantic==2.11.5
+
+# Serialisation / utilities
+joblib==1.5.1
+pyarrow==20.0.0
+python-dateutil==2.9.0.post0
+
+# API client (used by dashboard)
+requests==2.34.2

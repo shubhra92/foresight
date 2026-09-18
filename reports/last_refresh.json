@@ -1,0 +1,12 @@
+{
+  "run_at": "2026-09-18T19:27:56.559434",
+  "status": "ok",
+  "model_type": "lgbm",
+  "wape_lgbm": 0.1203,
+  "wape_baseline": 0.2618,
+  "improvement_pct": 54.0,
+  "data_end_date": "2024-12-30T00:00:00",
+  "forecast_end": "2025-02-24T00:00:00",
+  "n_skus": 200,
+  "tracking_rows": 1
+}

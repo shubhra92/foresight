@@ -1,0 +1,106 @@
+======================================================================
+PROJECT FORESIGHT — Data Quality Report
+Client: NorthBay Living
+======================================================================
+
+── RAW TABLE STATISTICS (before cleaning) ──────────────────────────
+
+  Table: sales
+    Rows       : 86,235
+    Duplicates : 852
+    Total nulls: 2587
+    Null cols  : {'units_sold': 1291, 'revenue': 1296}
+    ⚠ Negative unit_price: 10 rows
+
+  Table: sku_master
+    Rows       : 200
+    Duplicates : 0
+    Total nulls: 0
+    Category labels (raw): ['Bedding', 'Decor', 'FURNITURE', 'Furniture', 'Kitchen', 'Lighting', 'bedding ', 'decor ', 'furniture ', 'kitchen ', 'lighting ']
+
+  Table: calendar
+    Rows       : 731
+    Duplicates : 0
+    Total nulls: 698
+    Null cols  : {'promo_event': 698}
+
+  Table: inventory
+    Rows       : 12,253
+    Duplicates : 0
+    Total nulls: 0
+
+── REFERENTIAL INTEGRITY ───────────────────────────────────────────
+
+  Orphan SKUs in sales (not in sku_master): 0
+  Orphan SKUs in inventory (not in sku_master): 0
+
+── CLEANING DECISIONS ──────────────────────────────────────────────
+
+  sales_daily:
+    • Exact duplicate rows removed (keep first).
+    • Negative unit_price corrected to absolute value (sign error).
+    • Missing units_sold imputed with 0 (no-sale days).
+    • Missing revenue imputed as units_sold × unit_price, else 0.
+    • units_sold and revenue clipped to ≥ 0.
+
+  sku_master:
+    • category and subcategory normalised to title-case, stripped.
+    • Duplicate sku_ids removed (keep first).
+
+  calendar:
+    • Null promo_event filled with 'None'.
+    • is_holiday cast to int.
+
+  inventory_snapshots:
+    • on_hand / on_order clipped to ≥ 0.
+    • Missing lead_time / reorder_point filled with column median.
+
+── POST-PIPELINE ANALYSIS-READY DATASET ────────────────────────────
+
+  Shape      : 12,426 rows × 37 columns
+  SKUs       : 200
+  Date range : 2022-12-26 → 2024-12-30
+  Null count : 10851
+
+  Feature columns:
+    available_stock                int64        nulls=0
+    avg_unit_price                 float64      nulls=0
+    cat_Bedding                    int64        nulls=0
+    cat_Decor                      int64        nulls=0
+    cat_Furniture                  int64        nulls=0
+    cat_Kitchen                    int64        nulls=0
+    cat_Lighting                   int64        nulls=0
+    category                       object       nulls=0
+    is_holiday_week                int64        nulls=0
+    is_q4                          int64        nulls=0
+    lag_1w                         float64      nulls=200
+    lag_2w                         float64      nulls=400
+    lag_4w                         float64      nulls=800
+    lag_52w                        float64      nulls=9051
+    launch_date                    datetime64[ns] nulls=0
+    lead_time_days                 int64        nulls=0
+    list_price                     float64      nulls=0
+    month                          int32        nulls=0
+    on_hand_units                  int64        nulls=0
+    on_order_units                 int64        nulls=0
+    price_ratio                    float64      nulls=0
+    promo_weeks                    int64        nulls=0
+    reorder_point                  int64        nulls=0
+    revenue                        float64      nulls=0
+    roll_mean_4w                   float64      nulls=200
+    roll_mean_8w                   float64      nulls=200
+    roll_std_4w                    float64      nulls=0
+    season                         object       nulls=0
+    season_encoded                 int64        nulls=0
+    sku_age_weeks                  int64        nulls=0
+    sku_id                         object       nulls=0
+    stock_cover_weeks              float64      nulls=0
+    subcategory                    object       nulls=0
+    unit_cost                      float64      nulls=0
+    units_sold                     int64        nulls=0
+    week_of_year                   int64        nulls=0
+    week_start                     datetime64[ns] nulls=0
+
+======================================================================
+End of report.
+======================================================================

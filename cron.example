@@ -1,0 +1,23 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Project FORESIGHT — scheduled weekly refresh (accuracy monitoring)
+#
+# Two equivalent ways to run the weekly job:
+#
+#   1) Host cron (below) — recomputes pipeline + forecast + risk, appends the
+#      accuracy snapshot to reports/accuracy_tracking.parquet, and updates
+#      reports/last_refresh.json. The running API/dashboard pick up the new
+#      artefacts next time they reload (or on container restart).
+#
+#   2) Docker one-shot:  docker compose run --rm refresh
+#      (add 0 3 * * 1  docker compose -f …/foresight/docker-compose.yml run --rm refresh
+#       to your host crontab if you prefer containers.)
+#
+# Install with:  crontab cron.example
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Every Monday at 03:00, run the weekly refresh inside the project venv.
+# Adjust CWD/venv paths to your checkout.
+0 3 * * 1 cd /path/to/foresight && ./.venv/bin/python src/run_weekly.py >> logs/weekly.log 2>&1
+
+# Optional: after refresh, restart the API container so it reloads fresh artefacts.
+# 5 3 * * 1 docker compose -f /path/to/foresight/docker-compose.yml restart api
