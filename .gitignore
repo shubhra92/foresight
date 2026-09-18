@@ -2,8 +2,11 @@
 .venv/
 
 # Processed data (large files)
-data/processed/
+data/processed/*
 data/raw/*.csv
+
+# Cloud dashboard needs the generated artefacts to render — keep them in git
+!data/processed/*.parquet
 
 # Python cache
 __pycache__/

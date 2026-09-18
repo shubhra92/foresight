@@ -1,6 +1,11 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Project FORESIGHT — dependencies
-# Python 3.13+  |  Install: pip install -r requirements.txt
+# Python 3.13  |  Install: pip install -r requirements.txt
+# Cloud (Streamlit Community Cloud): set "Python version" → 3.13 in the
+# Deploy → Advanced settings dialog. runtime.txt is NOT honored; the platform
+# defaults to Python 3.14, where pyarrow==20.0.0 (and this pinned stack) has
+# no wheels and fails to build from source. All pins below ship cp313
+# manylinux wheels.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Core data stack
