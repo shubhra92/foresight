@@ -1,38 +1,46 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Project FORESIGHT — dependencies
-# Python 3.13  |  Install: pip install -r requirements.txt
-# Cloud (Streamlit Community Cloud): set "Python version" → 3.13 in the
-# Deploy → Advanced settings dialog. runtime.txt is NOT honored; the platform
-# defaults to Python 3.14, where pyarrow==20.0.0 (and this pinned stack) has
-# no wheels and fails to build from source. All pins below ship cp313
-# manylinux wheels.
+# Python 3.13 / 3.14  |  Install: pip install -r requirements.txt
+# Every pin below ships prebuilt binary wheels for CPython 3.13 AND 3.14
+# (manylinux x86_64/aarch64), so dependency processing stays binary-only on
+# Streamlit Community Cloud — which defaults to Python 3.14 (runtime.txt is
+# NOT honored there). Older pins (pyarrow==20.0.0, pandas 2.x, numpy 2.2, …)
+# had no cp314 wheels, so Cloud compiled them from source and failed on
+# missing cmake.
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Core data stack
-pandas==2.2.3
-numpy==2.2.6
+pandas==3.0.6
+numpy==2.5.3
 
 # Machine learning & forecasting
-scikit-learn==1.6.1
-lightgbm==4.6.0
-statsmodels==0.14.4
+scikit-learn==1.9.1
+lightgbm==4.6.0            # universal py3-none wheel → 3.13/3.14 safe
+statsmodels==0.15.0
 
 # Visualisation
-matplotlib==3.10.3
-plotly==6.1.2
+matplotlib==3.11.2
+plotly==6.1.2              # pure python
 
 # Dashboard
-streamlit==1.45.1
+streamlit==1.64.0          # pure python; pandas<4 cap added in 1.56.0
 
 # API service
-fastapi==0.115.12
+fastapi==0.115.12          # pure python
 uvicorn[standard]==0.34.3
-pydantic==2.11.5
+pydantic==2.13.5           # pins pydantic-core==2.46.5 (cp314 wheels)
 
 # Serialisation / utilities
-joblib==1.5.1
-pyarrow==20.0.0
-python-dateutil==2.9.0.post0
+joblib==1.5.1              # pure python
+pyarrow==25.0.1
+python-dateutil==2.9.0.post0  # pure python
 
 # API client (used by dashboard)
-requests==2.34.2
+requests==2.34.2           # pure python
+
+# Compiled transitive deps pinned explicitly for 3.14 binary determinism
+scipy==1.18.1
+uvloop==0.22.1
+httptools==0.8.0
+watchfiles==1.2.0
+pyyaml==6.0.3
